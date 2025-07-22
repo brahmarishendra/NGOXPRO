@@ -109,23 +109,14 @@ img {
 .hamburger {
     display: none;
     flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
+    justify-content: space-around;
+    width: 24px;
     height: 24px;
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 0;
-    position: absolute;
-    top: 50%;
-    right: 20px;
-    transform: translateY(-50%);
     z-index: 1001;
-    transition: all 0.3s ease;
-    font-size: 28px;
-    color: #333;
-    padding: 8px;
-    border-radius: 6px;
     transition: all 0.3s ease;
 }
 
@@ -139,25 +130,42 @@ img {
 }
 
 .hamburger-line {
-    width: 30px;
+    width: 100%;
     height: 2px;
-    background-color: #000;
-    border-radius: 1px;
+    background-color: #374151;
     transition: all 0.3s ease;
     transform-origin: center;
 }
 
-.hamburger.active .hamburger-line:first-child {
-    transform: rotate(45deg) translate(6px, 6px);
+.hamburger.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
 }
 
 .hamburger.active .hamburger-line:nth-child(2) {
     opacity: 0;
-    transform: scale(0);
 }
 
-.hamburger.active .hamburger-line:last  -child {
-    transform: rotate(-45deg) translate(6px, -6px);
+.hamburger.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Mobile Navigation Overlay */
+.mobile-nav-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-nav-overlay.active {
+    display: block;
+    opacity: 1;
 }
 
 /* --- Enhanced Mobile Menu Styles --- */
@@ -167,77 +175,68 @@ img {
 
 /* The main overlay container */
 .mobile-nav {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    display: none;
     position: fixed;
-    top: 0;
+    top: 96px;
     left: 0;
     width: 100%;
-    height: 100%;
-    background: #ffffff;
-    z-index: 999;
-    padding: 24px;
-    padding-top: 80px; /* Add space for the header/close button */
-    box-sizing: border-box;
-
-    /* Animation: Slide in from the right */
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transform: translateY(-100%);
     opacity: 0;
-    visibility: hidden;
-    transform: translateX(100%);
-    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: all 0.3s ease;
+    border-top: 1px solid #e5e7eb;
 }
 
 .mobile-nav.active {
+    display: block;
+    transform: translateY(0);
     opacity: 1;
-    visibility: visible;
-    transform: translateX(0);
 }
 
-/* The wrapper for the navigation links */
 .mobile-nav .nav {
-    display: flex;
     flex-direction: column;
-    width: 100%;
+    padding: 20px;
     gap: 0;
 }
 
-/* Styling for each individual navigation link */
 .mobile-nav .nav a {
-    color: #1a1a1a;
-    font-size: 22px; /* Slightly larger for impact */
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 16px;
     font-weight: 500;
-    text-align: left;
+    color: #374151;
     text-decoration: none;
-    padding: 18px 10px; /* Adjusted padding */
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    display: block;
     width: 100%;
-    border-bottom: 1px solid #f0f0f0; /* Subtle separator */
-    position: relative;
-    
-    /* Staggered animation styles */
-    opacity: 0;
-    transform: translateX(-20px);
-    transition: opacity 0.4s ease, transform 0.4s ease, background-color 0.3s ease;
+    text-align: left;
 }
 
-/* Add a subtle background on hover */
 .mobile-nav .nav a:hover {
-    background-color: #f9f9f9;
+    background-color: #f3f4f6;
+    color: #ff7433;
+    border-color: rgba(255, 116, 51, 0.2);
 }
 
-/* When the menu is active, animate the links into view */
-.mobile-nav.active .nav a {
-    opacity: 1;
-    transform: translateX(0);
+.mobile-nav .nav a.active {
+    background-color: #ff7433;
+    color: white;
+    border-color: #ff7433;
+    font-weight: 600;
 }
 
-/* Stagger the animation for each link */
-.mobile-nav.active .nav a:nth-child(1) { transition-delay: 0.1s; }
-.mobile-nav.active .nav a:nth-child(2) { transition-delay: 0.15s; }
-.mobile-nav.active .nav a:nth-child(3) { transition-delay: 0.2s; }
-.mobile-nav.active .nav a:nth-child(4) { transition-delay: 0.25s; }
-.mobile-nav.active .nav a:nth-child(5) { transition-delay: 0.3s; }
-
+.mobile-nav .donate-btn {
+    margin: 16px 20px 0;
+    width: calc(100% - 40px);
+    justify-content: center;
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: 600;
+}
 
 /* The "Donate Now" button at the bottom */
 .mobile-nav .donate-btn {
@@ -344,6 +343,31 @@ img {
     .mobile-nav {
         top: 80px; /* Adjust top position if header height changes */
     }
+    
+    .hamburger {
+        display: flex;
+    }
+    
+    .mobile-nav {
+        display: block;
+    }
+}
+
+/* Smooth scrolling for mobile nav links */
+@media (max-width: 768px) {
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Prevent body scroll when mobile nav is open */
+    body.mobile-nav-open {
+        overflow: hidden;
+    }
+    
+    /* Adjust header height for mobile nav positioning */
+    .mobile-nav {
+        top: 80px; /* Adjust based on actual header height on mobile */
+    }
 }
 
 @media (max-width: 576px) {
@@ -361,6 +385,22 @@ img {
     }
     .hamburger {
         right: 10px;
+    }
+    
+    .mobile-nav {
+        top: 70px; /* Further adjust for smaller screens */
+    }
+    
+    .mobile-nav .nav a {
+        padding: 14px 16px;
+        font-size: 15px;
+    }
+    
+    .mobile-nav .donate-btn {
+        margin: 12px 16px 0;
+        width: calc(100% - 32px);
+        padding: 12px 20px;
+        font-size: 15px;
     }
 }
 /* Navigation icons */

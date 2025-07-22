@@ -1,5 +1,73 @@
 // Smooth scrolling for navigation links
 document.addEventListener('DOMContentLoaded', function() {
+    // Mobile Navigation Toggle
+    const hamburger = document.querySelector('.hamburger');
+    const mobileNav = document.querySelector('.mobile-nav');
+    const body = document.body;
+    let mobileNavOverlay;
+    
+    // Create mobile nav overlay
+    function createMobileNavOverlay() {
+        if (!mobileNavOverlay) {
+            mobileNavOverlay = document.createElement('div');
+            mobileNavOverlay.className = 'mobile-nav-overlay';
+            document.body.appendChild(mobileNavOverlay);
+            
+            mobileNavOverlay.addEventListener('click', closeMobileNav);
+        }
+    }
+    
+    function openMobileNav() {
+        createMobileNavOverlay();
+        hamburger.classList.add('active');
+        mobileNav.classList.add('active');
+        mobileNavOverlay.classList.add('active');
+        body.classList.add('mobile-nav-open');
+    }
+    
+    function closeMobileNav() {
+        hamburger.classList.remove('active');
+        mobileNav.classList.remove('active');
+        if (mobileNavOverlay) {
+            mobileNavOverlay.classList.remove('active');
+        }
+        body.classList.remove('mobile-nav-open');
+    }
+    
+    function toggleMobileNav() {
+        if (mobileNav.classList.contains('active')) {
+            closeMobileNav();
+        } else {
+            openMobileNav();
+        }
+    }
+    
+    if (hamburger) {
+        hamburger.addEventListener('click', toggleMobileNav);
+    }
+    
+    // Close mobile nav when clicking on nav links
+    const mobileNavLinks = mobileNav.querySelectorAll('.nav a');
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            closeMobileNav();
+        });
+    });
+    
+    // Close mobile nav on window resize if screen becomes large
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && mobileNav.classList.contains('active')) {
+            closeMobileNav();
+        }
+    });
+    
+    // Handle escape key to close mobile nav
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+            closeMobileNav();
+        }
+    });
+
     // --- Mobile menu functionality ---
     const hamburger = document.querySelector('.hamburger');
     const mobileNav = document.querySelector('.mobile-nav');
