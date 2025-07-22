@@ -69,8 +69,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // --- Mobile menu functionality ---
-    const hamburger = document.querySelector('.hamburger');
-    const mobileNav = document.querySelector('.mobile-nav');
     let mobileNavLinks; // Declare it here, but define it AFTER cloning
 
     if (hamburger && mobileNav) {
