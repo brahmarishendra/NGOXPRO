@@ -1,5 +1,28 @@
 // Fixed Mobile Navigation JavaScript - Improved Version
 document.addEventListener('DOMContentLoaded', function() {
+    // Set active navigation function
+    function setActiveNavigation() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav a');
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav .nav a');
+        
+        // Remove active class from all links
+        [...navLinks, ...mobileNavLinks].forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        // Add active class to current page link
+        [...navLinks, ...mobileNavLinks].forEach(link => {
+            const linkPath = new URL(link.href).pathname;
+            if (currentPath === linkPath || 
+                (currentPath === '/' && linkPath.includes('index.html')) ||
+                (currentPath.includes('causes') && linkPath.includes('causes.html')) ||
+                (currentPath.includes('achievements') && linkPath.includes('achievements.html'))) {
+                link.classList.add('active');
+            }
+        });
+    }
+    
     // Mobile Navigation Toggle
     const hamburger = document.querySelector('.hamburger');
     const mobileNav = document.querySelector('.mobile-nav');
