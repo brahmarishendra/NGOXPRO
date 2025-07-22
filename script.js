@@ -1,42 +1,5 @@
 // Fixed Mobile Navigation JavaScript - Improved Version
 document.addEventListener('DOMContentLoaded', function() {
-    // Mobile navigation toggle
-    const hamburger = document.querySelector('.hamburger');
-    const mobileNav = document.querySelector('.mobile-nav');
-    
-    if (hamburger && mobileNav) {
-        hamburger.addEventListener('click', function() {
-            hamburger.classList.toggle('active');
-            mobileNav.classList.toggle('active');
-            
-            // Prevent body scroll when mobile menu is open
-            if (mobileNav.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = '';
-            }
-        });
-        
-        // Close mobile nav when clicking on a link
-        const mobileNavLinks = mobileNav.querySelectorAll('a');
-        mobileNavLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                hamburger.classList.remove('active');
-                mobileNav.classList.remove('active');
-                document.body.style.overflow = '';
-            });
-        });
-        
-        // Close mobile nav when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!hamburger.contains(e.target) && !mobileNav.contains(e.target)) {
-                hamburger.classList.remove('active');
-                mobileNav.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
-    }
-    
     // Mobile Navigation Toggle
     const hamburger = document.querySelector('.hamburger');
     const mobileNav = document.querySelector('.mobile-nav');
