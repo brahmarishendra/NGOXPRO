@@ -1,0 +1,22 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/causes",
+      "destination": "/causes.html"
+    },
+    {
+      "source": "/causes/",
+      "destination": "/causes.html"
+    },
+    {
+      "source": "/achievements",
+      "destination": "/achievements.html"
+    },
+    {
+      "source": "/achievements/",
+      "destination": "/achievements.html"
+    }
+  ]
+}
