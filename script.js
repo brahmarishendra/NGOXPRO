@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Close mobile nav when clicking on nav links
-    const mobileNavLinks = mobileNav.querySelectorAll('.nav a');
+    mobileNavLinks = mobileNav.querySelectorAll('.nav a');
     mobileNavLinks.forEach(link => {
         link.addEventListener('click', () => {
             closeMobileNav();
