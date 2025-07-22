@@ -1,263 +1,436 @@
-// Smooth scrolling for navigation links
+// Fixed Mobile Navigation JavaScript - Improved Version
 document.addEventListener('DOMContentLoaded', function() {
     // Mobile Navigation Toggle
     const hamburger = document.querySelector('.hamburger');
     const mobileNav = document.querySelector('.mobile-nav');
     const body = document.body;
     let mobileNavOverlay;
-    
-    // Create mobile nav overlay
+    let mobileNavLinks;
+
+    // Enhanced debug logging
+    console.log('=== Mobile Navigation Debug Info ===');
+    console.log('Hamburger element:', hamburger);
+    console.log('Mobile nav element:', mobileNav);
+    console.log('Document ready state:', document.readyState);
+
+    // Check if elements exist with more specific error messages
+    if (!hamburger) {
+        console.error('❌ Hamburger element not found! Looking for: .hamburger');
+        console.log('Available elements with "hamburger" class:', document.querySelectorAll('[class*="hamburger"]'));
+        return;
+    }
+
+    if (!mobileNav) {
+        console.error('❌ Mobile nav element not found! Looking for: .mobile-nav');
+        console.log('Available elements with "mobile" class:', document.querySelectorAll('[class*="mobile"]'));
+        console.log('Available nav elements:', document.querySelectorAll('nav'));
+        return;
+    }
+
+    console.log('✅ Both elements found successfully');
+
+    // Enhanced mobile nav overlay creation
     function createMobileNavOverlay() {
         if (!mobileNavOverlay) {
             mobileNavOverlay = document.createElement('div');
             mobileNavOverlay.className = 'mobile-nav-overlay';
+            mobileNavOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 998;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(2px);
+            `;
             document.body.appendChild(mobileNavOverlay);
             
             mobileNavOverlay.addEventListener('click', closeMobileNav);
+            console.log('✅ Mobile nav overlay created');
         }
     }
     
     function openMobileNav() {
+        console.log('🔄 Opening mobile nav...');
         createMobileNavOverlay();
+        
         hamburger.classList.add('active');
         mobileNav.classList.add('active');
-        mobileNavOverlay.classList.add('active');
         body.classList.add('mobile-nav-open');
+        
+        if (mobileNavOverlay) {
+            mobileNavOverlay.style.opacity = '1';
+            mobileNavOverlay.style.visibility = 'visible';
+        }
+        
+        // Force a reflow to ensure styles are applied
+        mobileNav.offsetHeight;
+        
+        console.log('✅ Mobile nav opened');
+        console.log('Mobile nav classes:', mobileNav.classList.toString());
+        console.log('Mobile nav computed display:', window.getComputedStyle(mobileNav).display);
+        console.log('Mobile nav computed visibility:', window.getComputedStyle(mobileNav).visibility);
+        console.log('Mobile nav computed transform:', window.getComputedStyle(mobileNav).transform);
     }
     
     function closeMobileNav() {
+        console.log('🔄 Closing mobile nav...');
+        
         hamburger.classList.remove('active');
         mobileNav.classList.remove('active');
-        if (mobileNavOverlay) {
-            mobileNavOverlay.classList.remove('active');
-        }
         body.classList.remove('mobile-nav-open');
+        
+        if (mobileNavOverlay) {
+            mobileNavOverlay.style.opacity = '0';
+            mobileNavOverlay.style.visibility = 'hidden';
+        }
+        
+        console.log('✅ Mobile nav closed');
     }
     
     function toggleMobileNav() {
+        console.log('🔄 Toggling mobile nav. Current state:', mobileNav.classList.contains('active'));
+        
         if (mobileNav.classList.contains('active')) {
             closeMobileNav();
         } else {
             openMobileNav();
         }
     }
-    
-    if (hamburger) {
-        hamburger.addEventListener('click', toggleMobileNav);
-    }
-    
-    // Close mobile nav when clicking on nav links
-    mobileNavLinks = mobileNav.querySelectorAll('.nav a');
-    mobileNavLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            closeMobileNav();
-        });
-    });
-    
-    // Close mobile nav on window resize if screen becomes large
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 768 && mobileNav.classList.contains('active')) {
-            closeMobileNav();
+
+    // Enhanced mobile nav content initialization
+    function initializeMobileNavContent() {
+        console.log('🔄 Initializing mobile nav content...');
+        
+        // Try multiple selectors for desktop navigation
+        const desktopNavSelectors = [
+            '.header-content .nav',
+            '.nav',
+            'header nav',
+            '.navigation',
+            '.main-nav'
+        ];
+        
+        let desktopNav = null;
+        for (const selector of desktopNavSelectors) {
+            desktopNav = document.querySelector(selector);
+            if (desktopNav) {
+                console.log(`✅ Found desktop nav with selector: ${selector}`);
+                break;
+            }
         }
-    });
-    
-    // Handle escape key to close mobile nav
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
-            closeMobileNav();
+
+        // Try multiple selectors for donate button
+        const donateBtnSelectors = [
+            '.header-content .donate-btn',
+            '.donate-btn',
+            'header .donate-btn',
+            '.btn.donate-btn'
+        ];
+        
+        let desktopDonateBtn = null;
+        for (const selector of donateBtnSelectors) {
+            desktopDonateBtn = document.querySelector(selector);
+            if (desktopDonateBtn) {
+                console.log(`✅ Found donate button with selector: ${selector}`);
+                break;
+            }
         }
-    });
 
-    // --- Mobile menu functionality ---
-    let mobileNavLinks; // Declare it here, but define it AFTER cloning
+        console.log('Desktop nav found:', desktopNav);
+        console.log('Desktop donate button found:', desktopDonateBtn);
 
-    if (hamburger && mobileNav) {
-        // Clone desktop nav and donate button into mobile-nav on load
-        const desktopNav = document.querySelector('.header-content .nav');
-        const desktopDonateBtn = document.querySelector('.header-content .donate-btn.primary');
+        // Clear existing content
+        mobileNav.innerHTML = '';
 
-        mobileNav.innerHTML = ''; // Clear any existing content
-
+        // Create navigation content
         if (desktopNav) {
-            const clonedNav = desktopNav.cloneNode(true); // Deep clone
-            clonedNav.classList.add('mobile-nav-content'); // Add specific class for mobile styling
-            clonedNav.classList.remove('nav'); // Remove desktop specific class
+            const clonedNav = desktopNav.cloneNode(true);
+            clonedNav.classList.add('mobile-nav-content');
+            clonedNav.classList.remove('nav', 'main-nav', 'navigation'); // Remove desktop classes
             mobileNav.appendChild(clonedNav);
-            // !!! IMPORTANT FIX: Now, select the links AFTER they are cloned into mobileNav !!!
-            mobileNavLinks = mobileNav.querySelectorAll('.mobile-nav-content a');
+            
+            mobileNavLinks = mobileNav.querySelectorAll('a');
+            console.log('✅ Mobile nav links created:', mobileNavLinks.length);
+        } else {
+            console.warn('⚠️ Desktop navigation not found. Creating fallback navigation.');
+            
+            // Enhanced fallback navigation
+            const fallbackNav = document.createElement('nav');
+            fallbackNav.className = 'mobile-nav-content';
+            fallbackNav.innerHTML = `
+                <a href="index.html" class="mobile-nav-link">Home</a>
+                <a href="#about" class="mobile-nav-link">About</a>
+                <a href="#causes" class="mobile-nav-link">Causes</a>
+                <a href="#impact" class="mobile-nav-link">Impact</a>
+                <a href="#contact" class="mobile-nav-link">Contact</a>
+            `;
+            mobileNav.appendChild(fallbackNav);
+            mobileNavLinks = mobileNav.querySelectorAll('a');
+            console.log('✅ Fallback navigation created with', mobileNavLinks.length, 'links');
         }
+
+        // Add donate button if found
         if (desktopDonateBtn) {
-            const clonedDonateBtn = desktopDonateBtn.cloneNode(true); // Deep clone
-            clonedDonateBtn.classList.remove('primary'); // Remove desktop specific class
-            clonedDonateBtn.classList.add('mobile-donate-btn'); // Add specific class for mobile styling
+            const clonedDonateBtn = desktopDonateBtn.cloneNode(true);
+            clonedDonateBtn.classList.remove('primary');
+            clonedDonateBtn.classList.add('mobile-donate-btn');
             mobileNav.appendChild(clonedDonateBtn);
+            console.log('✅ Mobile donate button added');
         }
 
-        // Event listener for hamburger click
-        hamburger.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            hamburger.classList.toggle('active');
-            mobileNav.classList.toggle('active');
-            console.log('Hamburger clicked. Mobile nav active:', mobileNav.classList.contains('active'));
-        });
-
-        // Close mobile nav when a link inside it is clicked
-        if (mobileNavLinks && mobileNavLinks.length > 0) { // Check if links exist
-            mobileNavLinks.forEach(link => {
+        // Enhanced click handlers for mobile nav links
+        if (mobileNavLinks && mobileNavLinks.length > 0) {
+            mobileNavLinks.forEach((link, index) => {
                 link.addEventListener('click', function(e) {
-                    if (this.getAttribute('href').startsWith('#')) {
+                    console.log(`🔗 Mobile nav link ${index + 1} clicked:`, this.getAttribute('href'));
+                    
+                    const href = this.getAttribute('href');
+                    
+                    // Handle anchor links
+                    if (href && href.startsWith('#')) {
                         e.preventDefault();
-                        const targetId = this.getAttribute('href');
-                        const targetSection = document.querySelector(targetId);
+                        const targetSection = document.querySelector(href);
                         if (targetSection) {
+                            console.log('📍 Scrolling to section:', href);
                             smoothScrollTo(targetSection);
+                        } else {
+                            console.warn('⚠️ Target section not found:', href);
                         }
                     }
-                    hamburger.classList.remove('active');
-                    mobileNav.classList.remove('active');
-                    console.log('Mobile nav link clicked. Mobile nav closed.');
+                    
+                    // Close mobile nav after clicking
+                    closeMobileNav();
                 });
             });
-        } else {
-            console.warn('No mobile nav links found after cloning. Mobile menu links might not be interactive.');
+            console.log('✅ Click handlers added to all mobile nav links');
         }
 
-        // Also add listener for the cloned donate button in mobile nav
+        // Enhanced mobile donate button handler
         const mobileDonateButton = mobileNav.querySelector('.mobile-donate-btn');
         if (mobileDonateButton) {
-            mobileDonateButton.addEventListener('click', function() {
-                window.location.href = 'donate.html';
-                hamburger.classList.remove('active');
-                mobileNav.classList.remove('active');
-                console.log('Mobile donate button clicked. Mobile nav closed.');
+            mobileDonateButton.addEventListener('click', function(e) {
+                console.log('💰 Mobile donate button clicked');
+                e.preventDefault();
+                closeMobileNav();
+                setTimeout(() => {
+                    window.location.href = 'donate.html';
+                }, 300);
             });
-        } else {
-            console.warn('Mobile donate button not found after cloning. Mobile menu donate button might not be interactive.');
+            console.log('✅ Mobile donate button handler added');
         }
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (mobileNav.classList.contains('active') && !mobileNav.contains(e.target) && !hamburger.contains(e.target)) {
-                mobileNav.classList.remove('active');
-                hamburger.classList.remove('active');
-                console.log('Clicked outside. Mobile nav closed.');
-            }
-        });
-
-        // Add touch support for mobile (swipe up to close)
-        let touchStartY = 0;
-        mobileNav.addEventListener('touchstart', function(e) {
-            touchStartY = e.changedTouches[0].screenY;
-        }, { passive: true });
-
-        mobileNav.addEventListener('touchend', function(e) {
-            let touchEndY = e.changedTouches[0].screenY;
-            const swipeThreshold = 50;
-            const diff = touchStartY - touchEndY;
-
-            if (diff > swipeThreshold) {
-                if (mobileNav.classList.contains('active')) {
-                    mobileNav.classList.remove('active');
-                    hamburger.classList.remove('active');
-                    console.log('Swiped up. Mobile nav closed.');
-                }
-            }
-        }, { passive: true });
-    } else {
-        console.error('Hamburger or Mobile Nav elements not found. Mobile menu functionality will not work.');
+        console.log('✅ Mobile nav content initialization complete');
     }
 
-    // Handle window resize for mobile menu - ensures menu closes if resized to desktop
-    function handleResize() {
-        if (window.innerWidth > 992) { // Changed to 992px to match CSS breakpoint
-            if (mobileNav && mobileNav.classList.contains('active')) {
-                mobileNav.classList.remove('active');
-                hamburger.classList.remove('active');
-            }
-        }
-        // Update carousel on resize
-        if (carouselController && carouselController.updateLayout) {
-            carouselController.updateLayout();
-        }
-    }
-    window.addEventListener('resize', handleResize);
+    // Initialize mobile navigation content
+    initializeMobileNavContent();
 
-    // --- Smooth scrolling for main navigation links ---
-    // ... (rest of your script, including mainNavLinks declaration and other functions) ...
-    // --- Smooth scrolling for main navigation links ---
-    // Select all navigation links, including those that might go to other pages
-    const mainNavLinks = document.querySelectorAll('.nav a');
-
-    mainNavLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            const href = this.getAttribute('href');
-
-            // Only smooth scroll for internal anchor links on the current page
-            if (href.startsWith('#') && window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
-                e.preventDefault(); // Prevent default only if smooth scrolling
-
-                const targetId = href;
-                const targetSection = document.querySelector(targetId);
-
-                if (targetSection) {
-                    smoothScrollTo(targetSection);
-                    // Close mobile menu if open (redundant due to mobileNavLinks handler, but safe)
-                    if (mobileNav && mobileNav.classList.contains('active')) {
-                        mobileNav.classList.remove('active');
-                        hamburger.classList.remove('active');
-                    }
-                }
-            }
-            // For links like 'causes.html' or 'achievements.html', let the default behavior (page navigation) happen
+    // Enhanced hamburger click event with detailed logging
+    hamburger.addEventListener('click', function(e) {
+        console.log('🍔 Hamburger clicked!');
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Current mobile nav state before toggle:', {
+            hasActiveClass: mobileNav.classList.contains('active'),
+            display: window.getComputedStyle(mobileNav).display,
+            visibility: window.getComputedStyle(mobileNav).visibility,
+            opacity: window.getComputedStyle(mobileNav).opacity,
+            transform: window.getComputedStyle(mobileNav).transform
         });
+        
+        toggleMobileNav();
+        
+        // Debug log after toggle
+        setTimeout(() => {
+            console.log('Mobile nav state after toggle:', {
+                hasActiveClass: mobileNav.classList.contains('active'),
+                display: window.getComputedStyle(mobileNav).display,
+                visibility: window.getComputedStyle(mobileNav).visibility,
+                opacity: window.getComputedStyle(mobileNav).opacity,
+                transform: window.getComputedStyle(mobileNav).transform
+            });
+        }, 100);
     });
 
-    // --- Function to set active navigation state based on current page/scroll ---
-    function setActiveNavigation() {
-        const currentPath = window.location.pathname.split('/').pop(); // Gets 'index.html', 'causes.html', etc.
-        const sections = document.querySelectorAll('section[id]');
-        const headerHeight = document.querySelector('.header').offsetHeight;
-
-        // Function to update active class based on scroll position
-        const updateActiveOnScroll = () => {
-            let currentSectionId = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - headerHeight - 10; // Add some offset
-                const sectionBottom = sectionTop + section.offsetHeight;
-                if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
-                    currentSectionId = section.getAttribute('id');
-                }
+    // Enhanced outside click handler
+    document.addEventListener('click', function(e) {
+        if (mobileNav.classList.contains('active')) {
+            const isClickInsideMobileNav = mobileNav.contains(e.target);
+            const isClickOnHamburger = hamburger.contains(e.target);
+            
+            console.log('Outside click detected:', {
+                target: e.target,
+                isInsideMobileNav: isClickInsideMobileNav,
+                isOnHamburger: isClickOnHamburger
             });
-
-            mainNavLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href').includes(currentSectionId) && currentSectionId) {
-                    link.classList.add('active');
-                } else if ((currentPath === '' || currentPath === 'index.html') && link.getAttribute('href') === 'index.html') {
-                    // Special handling for home page
-                    link.classList.add('active');
-                }
-            });
-        };
-
-        // Initial check and on scroll
-        updateActiveOnScroll();
-        window.addEventListener('scroll', updateActiveOnScroll);
-
-        // Also set active for direct page links (like causes.html)
-        mainNavLinks.forEach(link => {
-            link.classList.remove('active');
-            if (currentPath.includes(link.getAttribute('href').split('/').pop().split('.')[0]) && link.getAttribute('href') !== '#impact' && link.getAttribute('href') !== '#contact') {
-                link.classList.add('active');
+            
+            if (!isClickInsideMobileNav && !isClickOnHamburger) {
+                console.log('🔒 Closing mobile nav due to outside click');
+                closeMobileNav();
             }
-             // Ensure "Home" is active if on index.html or root
-            if ((currentPath === '' || currentPath === 'index.html') && link.getAttribute('href') === 'index.html') {
-                link.classList.add('active');
-            }
+        }
+    });
+
+    // Enhanced resize handler
+    window.addEventListener('resize', () => {
+        const isLargeScreen = window.innerWidth > 768;
+        const isMobileNavOpen = mobileNav.classList.contains('active');
+        
+        console.log('📱 Resize event:', {
+            windowWidth: window.innerWidth,
+            isLargeScreen,
+            isMobileNavOpen
         });
+        
+        if (isLargeScreen && isMobileNavOpen) {
+            console.log('🔒 Closing mobile nav due to screen resize');
+            closeMobileNav();
+        }
+    });
+
+    // Enhanced escape key handler
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+            console.log('⎋ Escape key pressed, closing mobile nav');
+            closeMobileNav();
+        }
+    });
+
+    // Enhanced touch support
+    let touchStartY = 0;
+    let touchStartX = 0;
+    
+    mobileNav.addEventListener('touchstart', function(e) {
+        touchStartY = e.changedTouches[0].screenY;
+        touchStartX = e.changedTouches[0].screenX;
+        console.log('👆 Touch start on mobile nav');
+    }, { passive: true });
+
+    mobileNav.addEventListener('touchend', function(e) {
+        if (!mobileNav.classList.contains('active')) return;
+        
+        let touchEndY = e.changedTouches[0].screenY;
+        let touchEndX = e.changedTouches[0].screenX;
+        const swipeThreshold = 50;
+        const verticalDiff = touchStartY - touchEndY;
+        const horizontalDiff = Math.abs(touchStartX - touchEndX);
+
+        console.log('👆 Touch end on mobile nav:', {
+            verticalDiff,
+            horizontalDiff,
+            threshold: swipeThreshold
+        });
+
+        // Close on swipe up or left
+        if ((verticalDiff > swipeThreshold && horizontalDiff < swipeThreshold) || 
+            (touchStartX - touchEndX > swipeThreshold)) {
+            console.log('👋 Closing mobile nav due to swipe gesture');
+            closeMobileNav();
+        }
+    }, { passive: true });
+
+    // Diagnostic function to check CSS
+    function checkMobileNavCSS() {
+        console.log('=== CSS Diagnostic ===');
+        const computedStyle = window.getComputedStyle(mobileNav);
+        const activeComputedStyle = window.getComputedStyle(document.body);
+        
+        console.log('Mobile nav base styles:', {
+            position: computedStyle.position,
+            zIndex: computedStyle.zIndex,
+            top: computedStyle.top,
+            right: computedStyle.right,
+            width: computedStyle.width,
+            height: computedStyle.height,
+            display: computedStyle.display,
+            visibility: computedStyle.visibility,
+            opacity: computedStyle.opacity,
+            transform: computedStyle.transform,
+            background: computedStyle.backgroundColor
+        });
+        
+        // Check if there are any CSS rules for .mobile-nav.active
+        const styleSheets = Array.from(document.styleSheets);
+        let hasActiveStyles = false;
+        
+        try {
+            styleSheets.forEach(sheet => {
+                try {
+                    const rules = Array.from(sheet.cssRules || sheet.rules || []);
+                    rules.forEach(rule => {
+                        if (rule.selectorText && rule.selectorText.includes('.mobile-nav.active')) {
+                            console.log('✅ Found active state CSS rule:', rule.selectorText, rule.cssText);
+                            hasActiveStyles = true;
+                        }
+                    });
+                } catch (e) {
+                    // Cross-origin stylesheets may throw errors
+                }
+            });
+        } catch (e) {
+            console.warn('Could not access all stylesheets for diagnostic');
+        }
+        
+        if (!hasActiveStyles) {
+            console.error('❌ No CSS rules found for .mobile-nav.active - this is likely the problem!');
+            console.log('💡 You need CSS like: .mobile-nav.active { display: block; } or similar');
+        }
+        
+        console.log('=== End CSS Diagnostic ===');
     }
 
+    // Run diagnostic after a short delay to ensure all styles are loaded
+    setTimeout(checkMobileNavCSS, 500);
+
+    // Add a manual test function to global scope for debugging
+    window.testMobileNav = function() {
+        console.log('=== Manual Mobile Nav Test ===');
+        console.log('Current state:', mobileNav.classList.contains('active'));
+        toggleMobileNav();
+        setTimeout(() => {
+            console.log('New state:', mobileNav.classList.contains('active'));
+            checkMobileNavCSS();
+        }, 100);
+    };
+
+    console.log('✅ Mobile navigation initialization complete');
+    console.log('🔧 Run testMobileNav() in console to manually test');
+
+    // Smooth scroll function (if not already defined)
+    function smoothScrollTo(targetElement, duration = 800) {
+        const headerOffset = document.querySelector('.header')?.offsetHeight || 80;
+        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+        const startPosition = window.pageYOffset;
+        const distance = targetPosition - startPosition;
+        let startTime = null;
+
+        function animation(currentTime) {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+            const ease = easeInOutQuad(progress);
+
+            window.scrollTo(0, startPosition + distance * ease);
+
+            if (timeElapsed < duration) {
+                requestAnimationFrame(animation);
+            }
+        }
+
+        function easeInOutQuad(t) {
+            t *= 2;
+            if (t < 1) return 0.5 * t * t;
+            return -0.5 * (--t * (t - 2) - 1);
+        }
+
+        requestAnimationFrame(animation);
+    }
     setActiveNavigation(); // Initial call to set active state
 
 
